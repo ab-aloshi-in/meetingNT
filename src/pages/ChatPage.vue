@@ -568,6 +568,7 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useQuasar, uid, date } from 'quasar'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import { useSocket } from '../composables/useSocket.js'
 
 // Markdown Tokenization using Marked Library [Start]
 import { Lexer } from 'marked'
@@ -684,7 +685,7 @@ const filteredContactsForMention = computed(() => {
   return contacts.value.filter((contact) =>
     contact.name
       .toLowerCase()
-      .includes(newMessage.value.substring(mentionStartIndex.value + 1).toLowerCase())
+      .includes(newMessage.value.substring(mentionStartIndex.value + 1).toLowerCase()),
   )
 })
 
@@ -753,7 +754,7 @@ const allForwardItems = computed(() => {
 const filteredForwardItems = computed(() => {
   if (forwardFilterText.value) {
     return allForwardItems.value.filter((item) =>
-      item.name.toLowerCase().includes(forwardFilterText.value.toLowerCase())
+      item.name.toLowerCase().includes(forwardFilterText.value.toLowerCase()),
     )
   }
   return allForwardItems.value
@@ -1053,7 +1054,7 @@ const applyMarkdown = async (type) => {
         const strikethroughEnd = end + nextStrikethroughEnd + 2 // +2 for the closing ~~
         const strikethroughText = newMessage.value.substring(
           strikethroughStart + 2,
-          strikethroughEnd - 2
+          strikethroughEnd - 2,
         )
         replacement = strikethroughText
         newMessage.value =
@@ -1439,7 +1440,7 @@ const filteredContacts = computed(() => {
 
   if (filterText.value) {
     filtered = filtered.filter((contact) =>
-      contact.name.toLowerCase().includes(filterText.value.toLowerCase())
+      contact.name.toLowerCase().includes(filterText.value.toLowerCase()),
     )
   }
 
@@ -1517,44 +1518,103 @@ const insertLineBreak = async () => {
   input.setSelectionRange(start + lineBreak.length, start + lineBreak.length)
 }
 
-import { useSocket } from 'src/composables/useSocket'
-
-const { connect, disconnect, on, emit } = useSocket()
-
-onMounted(() => {
-  connect()
-  // Listen for incoming messages from socket.io echo server
-  on('message', (data) => {
-    // data: { userId, message }
-    if (!messagesByUser.value[data.userId]) messagesByUser.value[data.userId] = []
-    messagesByUser.value[data.userId].push(data.message)
-  })
-})
+const { socket, connect, disconnect, on, off, emit } = useSocket() // Get WebSocket methods
 
 onUnmounted(() => {
   disconnect()
 })
 
+// function sendMessage() {
+//   if (!selectedContact.value || !newMessage.value.trim()) return
+
+//   const msg = {
+//     id: Date.now(),
+//     sender: 'me',
+//     text: newMessage.value,
+//     timestamp: new Date().toISOString(),
+//   }
+
+//   // Optimistically update UI
+//   if (!messagesByUser.value[selectedContact.value.id]) {
+//     messagesByUser.value[selectedContact.value.id] = []
+//   }
+//   messagesByUser.value[selectedContact.value.id].push(msg)
+
+//   try {
+//     const payload = {
+//       receiver_id: selectedContact.value.id,
+//       text: newMessage.value,
+//     }
+
+//     if (socket.value && socket.value.readyState === WebSocket.OPEN) {
+//       socket.value.send(
+//         JSON.stringify({
+//           receiver_id: selectedContact.value.id,
+//           text: newMessage.value,
+//         }),
+//       )
+//     } else {
+//       console.error('WebSocket is not open.')
+//     }
+//   } catch (error) {
+//     console.error('Failed to send message:', error)
+//   }
+
+//   newMessage.value = ''
+
+//   nextTick(() => {
+//     if (messageScrollArea.value) {
+//       messageScrollArea.value.setScrollPosition('vertical', 'infinity')
+//     }
+//   })
+
+//   console.log('Sending to WS:', {
+//     receiver_id: selectedContact.value.id,
+//     text: newMessage.value,
+//   })
+// }
+
 function sendMessage() {
   if (!selectedContact.value || !newMessage.value.trim()) return
+
   const msg = {
     id: Date.now(),
     sender: 'me',
     text: newMessage.value,
     timestamp: new Date().toISOString(),
   }
+
   // Optimistically update UI
   if (!messagesByUser.value[selectedContact.value.id]) {
     messagesByUser.value[selectedContact.value.id] = []
   }
   messagesByUser.value[selectedContact.value.id].push(msg)
-  // Send to echo server (or backend)
-  emit('message', {
-    userId: selectedContact.value.id,
-    message: msg,
+
+  try {
+    const payload = {
+      receiver_id: selectedContact.value.id,
+      text: newMessage.value,
+    }
+
+    console.log('Sending to WS:', payload) // Debug log
+
+    if (socket.value && socket.value.readyState === WebSocket.OPEN) {
+      socket.value.send(JSON.stringify(payload))
+      newMessage.value = '' // Only clear after successful send
+    } else {
+      console.error('WebSocket is not open.')
+    }
+  } catch (error) {
+    console.error('Failed to send message:', error)
+  }
+
+  nextTick(() => {
+    if (messageScrollArea.value) {
+      messageScrollArea.value.setScrollPosition('vertical', 'infinity')
+    }
   })
-  newMessage.value = ''
 }
+
 
 const onFilterTextChange = (value) => {
   filterText.value = value
@@ -1684,7 +1744,7 @@ const replyToMessage = (message) => {
 
   // Format the quoted message
   const formattedMessage = `> ${message.sender} (${formatTimestamp(
-    message.timestamp
+    message.timestamp,
   )}):\n${quotedLines}\n\n`
   // Set the new message value
   newMessage.value = formattedMessage
@@ -1701,29 +1761,6 @@ const forwardMessage = (message) => {
   messageToForward.value = message
   showForwardDialog.value = true
 }
-
-// const forwardToContact = (contact) => {
-//   if (messageToForward.value) {
-//     // Here you would implement the logic to send the message to the selected contact
-//     console.log(`Forwarding message to ${contact.name}: ${messageToForward.value.text}`)
-//     // You might want to add the message to the messages array of the selected contact
-//     // or trigger an API call to send the message.
-//     // For now, let's just log the action and close the dialog
-//     showForwardDialog.value = false
-//     messageToForward.value = null
-//   }
-// }
-
-// const forwardToItem = (item) => {
-//   if (messageToForward.value) {
-//     console.log(
-//       `Forwarding message to ${item.name} (${forwardType.value}): ${messageToForward.value.text}`,
-//     )
-//     // Add logic to send message to contact or channel
-//     showForwardDialog.value = false
-//     messageToForward.value = null
-//   }
-// }
 
 const deleteMessage = (message) => {
   messageToDelete.value = message
@@ -1784,10 +1821,11 @@ const hardcodedUsers = ref([])
 
 onMounted(async () => {
   try {
+    // Fetch users
     const response = await fetch('/api/v1.0/users/getallusers')
     if (!response.ok) throw new Error('Failed to fetch users')
     const data = await response.json()
-    // Map backend response to your frontend format
+
     hardcodedUsers.value = data.userList.map((user) => ({
       id: user.userId,
       name: user.userName,
@@ -1796,15 +1834,105 @@ onMounted(async () => {
         .map((n) => n[0])
         .join(''),
     }))
+
+    // Connect to WebSocket
+    connect()
+
+    // Wait for WebSocket to be initialized
+    const waitForSocket = setInterval(() => {
+      if (socket.value) {
+        clearInterval(waitForSocket)
+
+        socket.value.onopen = () => {
+          console.log('Connected to WebSocket server')
+        }
+
+        socket.value.onmessage = (event) => {
+          const data = JSON.parse(event.data)
+          console.log('Received WebSocket message:', data)
+
+          // For incoming messages, the contact is the sender (person we're chatting with)
+          const contactId = data.sender_id
+
+          const incomingMessage = {
+            id: data.message_id || Date.now(),
+            sender: data.sender_name || 'other',
+            text: data.text,
+            timestamp: data.timestamp || new Date().toISOString(),
+          }
+
+          // Initialize messages array if doesn't exist
+          if (!messagesByUser.value[contactId]) {
+            messagesByUser.value[contactId] = []
+          }
+
+          // Check for duplicates (in case of echo)
+          const isDuplicate = messagesByUser.value[contactId].some(
+            (msg) =>
+              msg.id === incomingMessage.id ||
+              (msg.text === incomingMessage.text && msg.sender === incomingMessage.sender),
+          )
+
+          if (!isDuplicate) {
+            messagesByUser.value[contactId].push(incomingMessage)
+
+            // Update contact list
+            updateContactList(contactId, data.sender_name, data.text)
+
+            // Auto-scroll if this is the current conversation
+            if (selectedContact.value?.id === contactId) {
+              nextTick(() => {
+                if (messageScrollArea.value) {
+                  messageScrollArea.value.setScrollPosition('vertical', 'infinity')
+                }
+              })
+            }
+          }
+        }
+        socket.value.onerror = (err) => {
+          console.error('WebSocket error:', err)
+        }
+
+        socket.value.onclose = () => {
+          console.log('Disconnected from WebSocket server')
+        }
+      }
+    }, 100)
   } catch (error) {
-    console.error('Error fetching users:', error)
+    console.error('Error initializing chat:', error)
   }
 })
+
+const updateContactList = (senderId, senderName, messageText) => {
+  let contact = recentChats.value.find(c => c.id === senderId)
+  
+  if (!contact) {
+    // Add new contact
+    contact = {
+      id: senderId,
+      name: senderName,
+      lastMessage: messageText.substring(0, 30) + (messageText.length > 30 ? '...' : ''),
+      avatarColor: 'primary',
+      unread: true,
+      draft: ''
+    }
+    recentChats.value.unshift(contact)
+  } else {
+    // Update existing contact
+    contact.lastMessage = messageText.substring(0, 30) + (messageText.length > 30 ? '...' : '')
+    contact.unread = selectedContact.value?.id !== senderId // Only mark unread if not current conversation
+    
+    // Move to top of list
+    const index = recentChats.value.indexOf(contact)
+    recentChats.value.splice(index, 1)
+    recentChats.value.unshift(contact)
+  }
+}
 
 const filteredUserList = computed(() => {
   if (!userSearchText.value) return hardcodedUsers.value
   return hardcodedUsers.value.filter((user) =>
-    user.name.toLowerCase().includes(userSearchText.value.toLowerCase())
+    user.name.toLowerCase().includes(userSearchText.value.toLowerCase()),
   )
 })
 function selectUser(user) {
@@ -1904,7 +2032,7 @@ watch(selectedContact, async (newContact) => {
 const filteredRecentChats = computed(() => {
   if (!filterText.value) return recentChats.value
   return recentChats.value.filter((contact) =>
-    contact.name.toLowerCase().includes(filterText.value.toLowerCase())
+    contact.name.toLowerCase().includes(filterText.value.toLowerCase()),
   )
 })
 </script>
