@@ -1524,56 +1524,6 @@ onUnmounted(() => {
   disconnect()
 })
 
-// function sendMessage() {
-//   if (!selectedContact.value || !newMessage.value.trim()) return
-
-//   const msg = {
-//     id: Date.now(),
-//     sender: 'me',
-//     text: newMessage.value,
-//     timestamp: new Date().toISOString(),
-//   }
-
-//   // Optimistically update UI
-//   if (!messagesByUser.value[selectedContact.value.id]) {
-//     messagesByUser.value[selectedContact.value.id] = []
-//   }
-//   messagesByUser.value[selectedContact.value.id].push(msg)
-
-//   try {
-//     const payload = {
-//       receiver_id: selectedContact.value.id,
-//       text: newMessage.value,
-//     }
-
-//     if (socket.value && socket.value.readyState === WebSocket.OPEN) {
-//       socket.value.send(
-//         JSON.stringify({
-//           receiver_id: selectedContact.value.id,
-//           text: newMessage.value,
-//         }),
-//       )
-//     } else {
-//       console.error('WebSocket is not open.')
-//     }
-//   } catch (error) {
-//     console.error('Failed to send message:', error)
-//   }
-
-//   newMessage.value = ''
-
-//   nextTick(() => {
-//     if (messageScrollArea.value) {
-//       messageScrollArea.value.setScrollPosition('vertical', 'infinity')
-//     }
-//   })
-
-//   console.log('Sending to WS:', {
-//     receiver_id: selectedContact.value.id,
-//     text: newMessage.value,
-//   })
-// }
-
 function sendMessage() {
   if (!selectedContact.value || !newMessage.value.trim()) return
 
