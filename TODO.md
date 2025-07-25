@@ -1,0 +1,137 @@
+# Tasks and Issues
+
+- [x] If the "Unread Chat" filter is on, user does not have a very clear indication that it is on.
+- [x] If the "Unread Chat" filter is on, then searching contacts only show contacts with the search criteria and unread messages
+- [x] Show a popover hint upon hovering on the "Unread Chat" filter button
+- [x] Make the search input clearable
+- [x] If the time difference between two consicutive messages is under 2 minutes for same sender, then for the second message, no need to show avatar and sender name
+- [x] After sending a message scroll the message area to bottom
+- [x] Limit the display of darft text to 30 characters in the contact area
+- [x] Limit the display of message text to 30 characters in the contact area. Not
+- [ ] Test this: What if a user has a very very long name.
+- [x] Give selected appearance for the q-drawer's active menu item
+- [x] Upon pressing the reply button, focus the message input field
+- [ ] Show: Inline Reply Items in a different way.
+- [x] Remove grey color from default background color of message.
+- [x] Update look and feel of the bookmarked messages.
+- [x] Change ToolTip text of Filter Unread Button. For both selected and unselected mode.
+- [x] The hover background color of the message div is not there, if user moves mouse over the icon buttons.
+- [x] Open links in messages in new browser tab/window.
+- [x] Create custom styles for the markdown generated html. (Heading, max width and height of images, links etc.)
+- [ ] Upon sending a message, if there are new line chars, but no two space at the end, then what should we do? (Keep it as it is? Or add two spaces at the end?)
+- [x] Show message time under the contact name in the message area.
+- [ ] Show message time at the left of the message in the message area.
+- [ ] Upon hovering a "time" in the message area, show its details in a popover.
+- [x] Show message date as a header in the message area, if the date changes.
+- [ ] Upon clicking a date header in the message area, show menu options regarding the date.
+- [ ] If a message is read, then change the appearance of the contact.
+- [ ] If a message is unread, scroll should be at the start of that message in the message area.
+- [ ] If a message is unread, the show those message with an emphasis. (How?)
+- [ ] If there are multiple unread messages, when should we consider it as unread?
+- [ ] Do we really need to show the last message for all contacts in the contact area?
+- [ ] Use DOMPurify to sanitize the html produced by the 'marked'. [Usage: Marked](https://github.com/markedjs/marked?tab=readme-ov-file#usage)
+- [ ] After inserting a new lines, the height of the message input is increased. Limit it to 60vh. And attach the message-input div to bottom.
+- [ ] How to add support to paste an image in the message input?
+- [ ] If markdown tool item (such as bold, italic, etc) is selected without text selection, then move the cursor position to the appropriate postion.
+- [ ] Undo is not working for the toolbar items.
+- [ ] If message input is in a 'list' item, upon pressing shift enter, automatically add list item prefix in the next line.
+- [ ] Correct the look and feel of the message display div.
+- [ ] In message input, pressing shift+enter while caret is in between texts.
+- [ ] Upon clicking on the reaction emojis, a user can only select only one emoji.
+- [ ] Upon clicking on the reaction emojis, If a user click on the same emoji as previous one, remove the previous emoji.
+- [ ] Upon clicking on a reaction emoji displayed for a message, show the list of users who reacted. Show this in a popup.
+- [ ] Card header height of "Chat" and "Message" are different.
+- [x] While highlighting a message, "date header" is also highlighted.
+- [ ] Tabs: In the message area: "All Messages", "Bookmarked"
+- [ ] Update the list of emojis. (Use the most useful emojis)
+- [ ] Add context menu for message.
+- [x] Upon pressing "Shift + Enter" or "Ctrl + Enter", insert new line char at caret position.
+- [ ] The code block is rendered with an extra space in the message area. (Root cause maybe in the input, while inserting code block.)
+- [x] Change the background color of the "code" and "code block" in the message area. It is confusing with the highlight color of the message.
+- [x] After editing a message, update the message instead of creating a new one.
+- [x] After editing a message, don't scroll to the bottom of the message area.
+- [ ] After editing a message, scroll to the top of the edited message.
+- [x] Pressing the enter key adds a new line in the message input.
+- [x] In the Insert Link dialog box, enable Insert button only after adding proper values.
+- [x] Upon applying the Markdown numbered list, insert the number list characters to the beginning of the current line.
+- [x] Upon applying the Markdown numbered list, if a line already has numbered list, then remove it.
+      Implement the below TODO
+      // TODO: Actually we should remove the numbering.
+- [x] Upon applying the Markdown list, insert the list characters to the beginning of the current line.
+- [x] Upon applying the Markdown blockquote, insert the blockquote characters to the beginning of the current line.
+- [x] Upon applying the Markdown heading, insert the heading character to the beginning of the current line.
+- [x] Upon pressing markdown toolbar button second time, Remove:
+
+  - [x] Bold
+  - [x] Italic
+  - [x] Strikethrough
+  - [x] Numbered List
+  - [x] List
+  - [x] Blockquoate
+  - [x] Heading
+  - [x] Code?
+  - [x] Code Block?
+
+  ***
+
+- [x] Upon pressing markdown toolbar button Bold, if the current cursor position is already within a bold context, then remove the bold from the identified context
+- [x] Upon pressing markdown toolbar button Italic, if the current cursor position is already within an italic context, then remove the italic from the identified context
+- [x] Upon pressing markdown toolbar button Strikethrough, if the current cursor position is already within a Strikethrough context, then remove the Strikethrough from the identified context
+- [x] Upon pressing markdown toolbar button Code, if the current cursor position is already within a Code context, then remove the Code from the identified context
+- [x] Upon pressing markdown toolbar button Code Block, if there is text before the current cursor, then prepend a new line character to the Code Block characters.
+- [x] Upon pressing markdown toolbar button Code Block, if the current cursor position is already within a Code Block context, then remove the Code Block from the identified context
+- [x] Highlight markdown toolbar buttons based on the current text context in the message input.
+- [x] Highlighting markdown toolbar for Bold has issue if the cursor is on the center of a line and there are bold words at both the start and end of the line.
+- [x] Highlighting markdown toolbar for Italic has issue if the cursor is in between two \* characters of the bold.
+- [x] Applying markdown toolbar for Italic has issue if the cursor is in between two \* characters of the bold. It removes one of these characters.
+- [ ] Applying markdown toolbar for Italic has issue if the cursor is in between the two \* characters at the opening or closing pairs of the Bold.
+
+- [x] For Italic style, use the \* instead of the \_
+- [x] If a selected text has space at front or back, then update the selection excluding the leading and trailing spaces.
+  - [ ] Italic has issue: if there is no space before the first underscore and after the last underscore.
+  - [ ] Issue: Select a word. Then click on the List button. The text is changed.
+  - [ ] Issue: Select a word. Then click on the Numbered List button. The text is changed.
+- [x] In the message display area, if a message date has been changed compared to the previous message, then display the sender's Avatar and Name.
+- [ ] For the below text, if cursor is just before the second \_ character, then the Italic is wrongly highlighted in the markdown toolbar  
+       This is a draft \_message to \_John\_
+- [ ] Add support for task list - []
+- [ ] Add support for mention using @
+- [ ] Upon mentioning contacts using @, align the bottom-left of the q-menu to the top-left of the q-input.
+- [ ] Upon mentioning contacts using @, align the bottom-left of the q-menu to the next to the cursor position of the q-input.
+- [x] Use q-dialog instead of q-menu
+- [ ] @ Mention has several issues: Typing "Space" dismisses the mention dialog
+- [ ] Upon pressing the @ character while cursor is not at the end of the q-input, list is empty in the q-dialog.
+- [ ] In the individual ChatPage, upon pressing the @ character, list only the current chat contact.
+- [ ] In the individual ChannelPage, upon pressing the @ character, list only the contacts, who are in the current channel. (Or show other contacts with disabled look and feel)
+- [ ] Add support for images
+- [ ] Get all styles which are applicable for a cursor position from the marked library.
+
+- [x] While applying markdown style code, avoid leading and trailing spaces from the current selection
+- [ ] Apply list => if already in numbered list => remove the numbered list
+- [ ] Requirement: Applying numbering to task list
+- [x] Selection + Apply number, list, or task list style => Issue
+- [x] Upon inserting a link, show the selected text in the link dialog
+- [x] Upon inserting a link, if the cursor is within a link, then show the current link details in the link dialog
+- [x] Upon cancelling the link dialog, clear the "Display Text" and "URL" fields.
+- [x] A blockquote can be in a numbered list (Example: 1. > Hello). Highlight the markdown Blockquote button accordingly.
+- [x] A blockquote can be in a list (Example: - > Hello). Highlight the markdown Blockquote button accordingly.
+- [x] A blockquote can also be in a task list (Example: - [ ] Hello). Highlight the markdown Blockquote button accordingly.
+- [x] Similar to blockquote, a Heading can be within lists, numbered lists, or task lists. Highlight the markdown Heading button accordingly.
+- [x] The markdown toolbar button Numbered List is incorrectly highlighted when "1. " is typed inside a code block
+- [x] The markdown toolbar button List is incorrectly highlighted when "- " is typed inside a code block
+- [x] The markdown toolbar button TTask List is incorrectly highlighted when "- [ ]" is typed inside a code block
+- [ ] Incorrect Bold and Italic highlighting for: This is a draft **me*sfffffffffs*age** to John
+- [ ] Incorrect Code highlighting after the "e" and before the backtick for: abcde`abcd`
+
+- [x] Show Status of the message. Sent, Delivered, Read.
+- [ ] organize the ChatPage.vue
+- [ ] Organize the ChatPage.vue
+- [ ] Make sub components based on the ChatPage.vue
+- [ ] Hide the markdown toolbar
+- [ ] Write server for the ChatPage.vue
+
+- [ ] Align the Send button to the bottom of the message input textarea.
+- [ ] Add filter button to show only the bookmarked messages in the mesage area
+- [ ] Add support to show desktop notifications.
+- [ ] Add support to get user's precise location and location history.
+- [ ] Add support to create and send Internet Calendaring and Scheduling (ICS) file.
